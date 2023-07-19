@@ -46,10 +46,10 @@ type ChatGPTRequestBody struct {
 // curl https://api.openai.com/v1/completions
 // -H "Content-Type: application/json"
 // -H "Authorization: Bearer your chatGPT key"
-// -d '{"model": "text-davinci-003", "prompt": "give me good song", "temperature": 0, "max_tokens": 7}'
+// -d '{"model": "text-davinci-003", "prompt": "give me good song", "temperature": 0, "max_tokens": 7}' 增加了gpt-3.5-turbo、gpt-4和gpt-4-32k模型
 func Completions(msg string) (string, error) {
 	requestBody := ChatGPTRequestBody{
-		Model:            "text-davinci-003",
+		Model:            "gpt-3.5-turbo",
 		Prompt:           msg,
 		MaxTokens:        1024,
 		Temperature:      0.7,

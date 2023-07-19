@@ -4,7 +4,7 @@
  * @Autor: Sean
  * @Date: 2023-03-18 21:00:40
  * @LastEditors: Sean
- * @LastEditTime: 2023-03-19 12:06:51
+ * @LastEditTime: 2023-07-19 21:04:39
  */
 package handlers
 
@@ -56,7 +56,7 @@ func (g *UserMessageHandler) ReplyText(msg *openwechat.Message) error {
 	reply, err := gpt.Completions(requestText)
 	if err != nil {
 		log.Printf("gpt request error: %v \n", err)
-		msg.ReplyText("机器人神了，我一会发现了就去修。")
+		msg.ReplyText("我太累了，得充电去！ 您的勉励，可是我最大的动力哦(●'◡'●)")
 		return err
 	}
 	if reply == "" {
