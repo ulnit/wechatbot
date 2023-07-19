@@ -4,7 +4,7 @@
  * @Autor: Sean
  * @Date: 2023-03-18 21:00:40
  * @LastEditors: Sean
- * @LastEditTime: 2023-07-19 21:04:39
+ * @LastEditTime: 2023-07-19 21:15:01
  */
 package handlers
 
@@ -56,7 +56,7 @@ func (g *UserMessageHandler) ReplyText(msg *openwechat.Message) error {
 	reply, err := gpt.Completions(requestText)
 	if err != nil {
 		log.Printf("gpt request error: %v \n", err)
-		msg.ReplyText("我太累了，得充电去！ 您的勉励，可是我最大的动力哦(●'◡'●)")
+		msg.ReplyText("我太累了，得充电去~ 您的勉励，是我最大的动力！(●'◡'●)")
 		return err
 	}
 	if reply == "" {
@@ -67,7 +67,7 @@ func (g *UserMessageHandler) ReplyText(msg *openwechat.Message) error {
 	reply = strings.TrimSpace(reply)
 	reply = strings.Trim(reply, "\n")
 	UserService.SetUserSessionContext(sender.ID(), requestText, reply)
-	reply = "FIU Bot回复：\n" + reply
+	reply = "：\n" + reply
 	_, err = msg.ReplyText(reply)
 	if err != nil {
 		log.Printf("response user error: %v \n", err)
