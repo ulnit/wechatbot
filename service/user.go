@@ -1,3 +1,11 @@
+/*
+ * @Description:
+ * @Version: 1.0
+ * @Autor: Sean
+ * @Date: 2023-02-20 14:48:32
+ * @LastEditors: Sean
+ * @LastEditTime: 2023-07-20 14:16:15
+ */
 package service
 
 import (
@@ -5,8 +13,8 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/869413421/wechatbot/config"
 	"github.com/patrickmn/go-cache"
-	"github.com/ulnit/wechatbot/config"
 )
 
 // UserServiceInterface 用户业务接口
@@ -24,7 +32,7 @@ type UserService struct {
 	cache *cache.Cache
 }
 
-// ClearUserSessionContext 清空GTP上下文，接收文本中包含`我要问下一个问题`，并且Unicode 字符数量不超过20就清空
+// ClearUserSessionContext 清空GPT上下文，接收文本中包含`我要问下一个问题`，并且Unicode 字符数量不超过20就清空
 func (s *UserService) ClearUserSessionContext(userId string, msg string) bool {
 	if strings.Contains(msg, "我要问下一个问题") && utf8.RuneCountInString(msg) < 20 {
 		s.cache.Delete(userId)
@@ -47,7 +55,7 @@ func (s *UserService) GetUserSessionContext(userId string) string {
 	return sessionContext.(string)
 }
 
-// SetUserSessionContext 设置用户会话上下文文本，question用户提问内容，GTP回复内容
+// SetUserSessionContext 设置用户会话上下文文本，question用户提问内容，GPT回复内容
 func (s *UserService) SetUserSessionContext(userId string, question, reply string) {
 	value := question + "\n" + reply
 	s.cache.Set(userId, value, time.Second*config.LoadConfig().SessionTimeout)

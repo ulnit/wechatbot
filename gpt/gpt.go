@@ -12,7 +12,8 @@ import (
 	"github.com/ulnit/wechatbot/config"
 )
 
-const BASEURL = "https://api.openai.com/v1/"
+// BASEURL 请求地址
+var BASEURL = "https://api.openai.com/v1/completions"
 
 // ChatGPTResponseBody 请求体
 type ChatGPTResponseBody struct {
@@ -31,6 +32,11 @@ type ChoiceItem struct {
 	FinishReason string `json:"finish_reason"`
 }
 
+type Messages struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
 // ChatGPTRequestBody 响应体
 type ChatGPTRequestBody struct {
 	Model            string  `json:"model"`
@@ -42,21 +48,66 @@ type ChatGPTRequestBody struct {
 	PresencePenalty  int     `json:"presence_penalty"`
 }
 
+type ChatGPTNewRequestBody struct {
+	Model    string `json:"model"`
+	Messages string `json:"messages"`
+}
+
 // Completions gpt文本模型回复
-// curl https://api.openai.com/v1/completions
-// -H "Content-Type: application/json"
-// -H "Authorization: Bearer your chatGPT key"
-// -d '{"model": "text-davinci-003", "prompt": "give me good song", "temperature": 0, "max_tokens": 7}' 增加了gpt-3.5-turbo、gpt-4和gpt-4-32k模型
+/*
+curl https://api.openai.com/v1/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{
+    "model": "text-davinci-003",
+    "prompt": "Say this is a test",
+    "max_tokens": 7,
+    "temperature": 0
+  }'
+
+*/
+// gpt-3.5 模型回复
+// curl https://api.openai.com/v1/chat/completions \
+// -H "Content-Type: application/json" \
+// -H "Authorization: Bearer $OPENAI_API_KEY" \
+//
+//	-d '{
+//	 "model": "gpt-3.5-turbo",
+//	 "messages": [{"role": "system", "content": "You are a helpful assistant."}, {"role": "user", "content": "Hello!"}]
+//	}'
+//
+// 增加了gpt-3.5-turbo、gpt-4和gpt-4-32k模型
 func Completions(msg string) (string, error) {
-	requestBody := ChatGPTRequestBody{
-		Model:            "gpt-3.5-turbo",
-		Prompt:           msg,
-		MaxTokens:        1024,
-		Temperature:      0.7,
-		TopP:             1,
-		FrequencyPenalty: 0,
-		PresencePenalty:  0,
+	// 定义请求体对象
+	var requestBody interface{}
+
+	//打印config
+	fmt.Println(config.LoadConfig())
+	//打印config的Model
+	fmt.Println(config.LoadConfig().Model)
+	//如果model为gpt-3.5-turbo，gpt-3.5-turbo-0613,gpt-3.5-turbo-16k,gpt-3.5-turbo-0301,gpt-3.5-turbo-16k-0613 则请求体对象为ChatGPTRequest;
+	if condition := config.LoadConfig().Model == "gpt-3.5-turbo" || config.LoadConfig().Model == "gpt-3.5-turbo-0613" || config.LoadConfig().Model == "gpt-3.5-turbo-16k" || config.LoadConfig().Model == "gpt-3.5-turbo-0301" || config.LastConfig().Model == "gpt-3.5-turbo-16k-0613"; condition {
+		requestBody = ChatGPTNewRequestBody{
+			Model:    config.LoadConfig().Model,
+			Messages: msg,
+		}
+		BASEURL = "https://api.openai.com/v1/chat/completions"
+	} else {
+		//如果model为text-davinci-003,davinci,text-davinci-001,ada,text-curie-001,text-ada-001,curie-instruct-beta,davinci-instruct-beta,text-babbage-001,text-davinci-002,curie，则请求体对象为ChatGPTRequestBody
+		if condition := config.LoadConfig().Model == "text-davinci-003" || config.LoadConfig().Model == "davinci" || config.LoadConfig().Model == "text-davinci-001" || config.LoadConfig().Model == "ada" || config.LoadConfig().Model == "text-curie-001" || config.LoadConfig().Model == "text-ada-001" || config.LoadConfig().Model == "curie-instruct-beta" || config.LoadConfig().Model == "davinci-instruct-beta" || config.LoadConfig().Model == "text-babbage-001" || config.LoadConfig().Model == "text-davinci-002" || config.LoadConfig().Model == "curie"; condition {
+			requestBody = ChatGPTRequestBody{
+				Model:            config.LoadConfig().Model,
+				Prompt:           msg,
+				MaxTokens:        1024,
+				Temperature:      0.7,
+				TopP:             1,
+				FrequencyPenalty: 0,
+				PresencePenalty:  0,
+			}
+			BASEURL = "https://api.openai.com/v1/completions"
+		}
 	}
+
 	requestData, err := json.Marshal(requestBody)
 
 	if err != nil {

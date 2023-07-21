@@ -1,3 +1,11 @@
+/*
+ * @Description:
+ * @Version: 1.0
+ * @Autor: Sean
+ * @Date: 2023-02-20 14:48:32
+ * @LastEditors: Sean
+ * @LastEditTime: 2023-07-21 14:19:30
+ */
 package config
 
 import (
@@ -10,10 +18,12 @@ import (
 
 // Configuration 项目配置
 type Configuration struct {
-	// gpt apikey
+	// gtp apikey
 	ApiKey string `json:"api_key"`
 	// 自动通过好友
 	AutoPass bool `json:"auto_pass"`
+	// gpt模型
+	Model string `json:"gpt_model"`
 	// 会话超时时间
 	SessionTimeout time.Duration `json:"session_timeout"`
 }
@@ -44,12 +54,16 @@ func LoadConfig() *Configuration {
 		// 如果环境变量有配置，读取环境变量
 		ApiKey := os.Getenv("ApiKey")
 		AutoPass := os.Getenv("AutoPass")
+		Model := os.Getenv("Model")
 		SessionTimeout := os.Getenv("SessionTimeout")
 		if ApiKey != "" {
 			config.ApiKey = ApiKey
 		}
 		if AutoPass == "true" {
 			config.AutoPass = true
+		}
+		if Model != "" {
+			config.Model = Model
 		}
 		if SessionTimeout != "" {
 			duration, err := time.ParseDuration(SessionTimeout)
