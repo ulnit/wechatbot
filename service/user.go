@@ -4,7 +4,7 @@
  * @Autor: Sean
  * @Date: 2023-02-20 14:48:32
  * @LastEditors: Sean
- * @LastEditTime: 2023-07-20 14:16:15
+ * @LastEditTime: 2023-07-21 15:15:43
  */
 package service
 
@@ -13,8 +13,8 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/869413421/wechatbot/config"
 	"github.com/patrickmn/go-cache"
+	"github.com/ulnit/wechatbot/config"
 )
 
 // UserServiceInterface 用户业务接口

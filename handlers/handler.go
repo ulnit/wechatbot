@@ -2,12 +2,13 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/869413421/wechatbot/config"
-	"github.com/869413421/wechatbot/service"
-	"github.com/eatmoreapple/openwechat"
-	"github.com/skip2/go-qrcode"
 	"log"
 	"runtime"
+
+	"github.com/eatmoreapple/openwechat"
+	"github.com/skip2/go-qrcode"
+	"github.com/ulnit/wechatbot/config"
+	"github.com/ulnit/wechatbot/service"
 )
 
 // MessageHandlerInterface 消息处理接口

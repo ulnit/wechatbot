@@ -1,11 +1,19 @@
+/*
+ * @Description:
+ * @Version: 1.0
+ * @Autor: Sean
+ * @Date: 2023-02-20 14:48:32
+ * @LastEditors: Sean
+ * @LastEditTime: 2023-07-21 15:14:14
+ */
 package bootstrap
 
 import (
-	"github.com/869413421/wechatbot/handlers"
-	"github.com/eatmoreapple/openwechat"
 	"log"
-)
 
+	"github.com/eatmoreapple/openwechat"
+	"github.com/ulnit/wechatbot/handlers"
+)
 
 func Run() {
 	//bot := openwechat.DefaultBot()
