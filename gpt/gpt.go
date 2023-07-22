@@ -159,8 +159,8 @@ func Completions(msg string) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			reply = gptNewResponseBody.Choices[0].Message.Content
 			log.Printf("gpt-3.5 reply")
+			reply = gptNewResponseBody.Choices[0].Message.Content
 		}
 	} else {
 		if condition := config.LoadConfig().Model == "text-davinci-003" || config.LoadConfig().Model == "davinci" || config.LoadConfig().Model == "text-davinci-001" || config.LoadConfig().Model == "ada" || config.LoadConfig().Model == "text-curie-001" || config.LoadConfig().Model == "text-ada-001" || config.LoadConfig().Model == "curie-instruct-beta" || config.LoadConfig().Model == "davinci-instruct-beta" || config.LoadConfig().Model == "text-babbage-001" || config.LoadConfig().Model == "text-davinci-002" || config.LoadConfig().Model == "curie"; condition {
@@ -170,8 +170,8 @@ func Completions(msg string) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				reply = gptResponseBody.Choices[0].Text
 				log.Printf("gpt-text reply")
+				reply = gptResponseBody.Choices[0].Text
 			}
 		}
 	}
