@@ -25,11 +25,26 @@ type ChatGPTResponseBody struct {
 	Usage   map[string]interface{} `json:"usage"`
 }
 
+type ChatGPTNewResponseBody struct {
+	ID      string                 `json:"id"`
+	Object  string                 `json:"object"`
+	Created int                    `json:"created"`
+	Model   string                 `json:"model"`
+	Choices []ChoiceNewItem        `json:"choices"`
+	Usage   map[string]interface{} `json:"usage"`
+}
+
 type ChoiceItem struct {
 	Text         string `json:"text"`
 	Index        int    `json:"index"`
 	Logprobs     int    `json:"logprobs"`
 	FinishReason string `json:"finish_reason"`
+}
+
+type ChoiceNewItem struct {
+	Index        int     `json:"index"`
+	Message      Message `json:"message"`
+	FinishReason string  `json:"finish_reason"`
 }
 
 type Message struct {
@@ -88,6 +103,7 @@ func Completions(msg string) (string, error) {
 			Messages: []Message{{Role: "user", Content: msg}},
 		}
 		BASEURL = "https://api.openai.com/v1/chat/"
+
 	} else {
 		//如果model为text-davinci-003,davinci,text-davinci-001,ada,text-curie-001,text-ada-001,curie-instruct-beta,davinci-instruct-beta,text-babbage-001,text-davinci-002,curie，则请求体对象为ChatGPTRequestBody
 		if condition := config.LoadConfig().Model == "text-davinci-003" || config.LoadConfig().Model == "davinci" || config.LoadConfig().Model == "text-davinci-001" || config.LoadConfig().Model == "ada" || config.LoadConfig().Model == "text-curie-001" || config.LoadConfig().Model == "text-ada-001" || config.LoadConfig().Model == "curie-instruct-beta" || config.LoadConfig().Model == "davinci-instruct-beta" || config.LoadConfig().Model == "text-babbage-001" || config.LoadConfig().Model == "text-davinci-002" || config.LoadConfig().Model == "curie"; condition {
@@ -132,17 +148,34 @@ func Completions(msg string) (string, error) {
 		return "", err
 	}
 
-	gptResponseBody := &ChatGPTResponseBody{}
 	log.Println(string(body))
-	err = json.Unmarshal(body, gptResponseBody)
-	if err != nil {
-		return "", err
-	}
 
 	var reply string
-	if len(gptResponseBody.Choices) > 0 {
-		reply = gptResponseBody.Choices[0].Text
+	//如果model为gpt-3.5-turbo，gpt-3.5-turbo-0613,gpt-3.5-turbo-16k,gpt-3.5-turbo-0301,gpt-3.5-turbo-16k-0613 则请求体对象为ChatGPTRequest;
+	if condition := config.LoadConfig().Model == "gpt-3.5-turbo" || config.LoadConfig().Model == "gpt-3.5-turbo-0613" || config.LoadConfig().Model == "gpt-3.5-turbo-16k" || config.LoadConfig().Model == "gpt-3.5-turbo-0301" || config.LoadConfig().Model == "gpt-3.5-turbo-16k-0613"; condition {
+		gptNewResponseBody := &ChatGPTNewResponseBody{}
+		if len(gptNewResponseBody.Choices) > 0 {
+			err = json.Unmarshal(body, gptNewResponseBody)
+			if err != nil {
+				return "", err
+			}
+			reply = gptNewResponseBody.Choices[0].Message.Content
+			log.Printf("gpt-3.5 reply")
+		}
+	} else {
+		if condition := config.LoadConfig().Model == "text-davinci-003" || config.LoadConfig().Model == "davinci" || config.LoadConfig().Model == "text-davinci-001" || config.LoadConfig().Model == "ada" || config.LoadConfig().Model == "text-curie-001" || config.LoadConfig().Model == "text-ada-001" || config.LoadConfig().Model == "curie-instruct-beta" || config.LoadConfig().Model == "davinci-instruct-beta" || config.LoadConfig().Model == "text-babbage-001" || config.LoadConfig().Model == "text-davinci-002" || config.LoadConfig().Model == "curie"; condition {
+			gptResponseBody := &ChatGPTResponseBody{}
+			if len(gptResponseBody.Choices) > 0 {
+				err = json.Unmarshal(body, gptResponseBody)
+				if err != nil {
+					return "", err
+				}
+				reply = gptResponseBody.Choices[0].Text
+				log.Printf("gpt-text reply")
+			}
+		}
 	}
+
 	log.Printf("gpt response text: %s \n", reply)
 	return reply, nil
 }
