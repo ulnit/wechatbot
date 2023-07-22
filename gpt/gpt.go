@@ -149,28 +149,28 @@ func Completions(msg string) (string, error) {
 	}
 
 	log.Println(string(body))
-
+	log.Println(config.LoadConfig().Model)
 	var reply string
 	//如果model为gpt-3.5-turbo，gpt-3.5-turbo-0613,gpt-3.5-turbo-16k,gpt-3.5-turbo-0301,gpt-3.5-turbo-16k-0613 则请求体对象为ChatGPTRequest;
 	if condition := config.LoadConfig().Model == "gpt-3.5-turbo" || config.LoadConfig().Model == "gpt-3.5-turbo-0613" || config.LoadConfig().Model == "gpt-3.5-turbo-16k" || config.LoadConfig().Model == "gpt-3.5-turbo-0301" || config.LoadConfig().Model == "gpt-3.5-turbo-16k-0613"; condition {
 		gptNewResponseBody := &ChatGPTNewResponseBody{}
+		err = json.Unmarshal(body, gptNewResponseBody)
+		if err != nil {
+			return "", err
+		}
+
+		log.Println(len(gptNewResponseBody.Choices))
 		if len(gptNewResponseBody.Choices) > 0 {
-			err = json.Unmarshal(body, gptNewResponseBody)
-			if err != nil {
-				return "", err
-			}
-			log.Printf("gpt-3.5 reply")
 			reply = gptNewResponseBody.Choices[0].Message.Content
 		}
 	} else {
 		if condition := config.LoadConfig().Model == "text-davinci-003" || config.LoadConfig().Model == "davinci" || config.LoadConfig().Model == "text-davinci-001" || config.LoadConfig().Model == "ada" || config.LoadConfig().Model == "text-curie-001" || config.LoadConfig().Model == "text-ada-001" || config.LoadConfig().Model == "curie-instruct-beta" || config.LoadConfig().Model == "davinci-instruct-beta" || config.LoadConfig().Model == "text-babbage-001" || config.LoadConfig().Model == "text-davinci-002" || config.LoadConfig().Model == "curie"; condition {
 			gptResponseBody := &ChatGPTResponseBody{}
+			err = json.Unmarshal(body, gptResponseBody)
+			if err != nil {
+				return "", err
+			}
 			if len(gptResponseBody.Choices) > 0 {
-				err = json.Unmarshal(body, gptResponseBody)
-				if err != nil {
-					return "", err
-				}
-				log.Printf("gpt-text reply")
 				reply = gptResponseBody.Choices[0].Text
 			}
 		}
